@@ -38,17 +38,19 @@ namespace FacialRecognitionSystem.Controllers
         public string AuthoritySearch()
         {
             var collectionId = "PoliceAuthorityCollection";
-            var collectionCreated = false;
+            var bucket = "bhavesh-aws-bucket";
+            var photo = "recognition/BM.jpg";
+            var photoToBeAdded = "download-2.jpg";
+
             if (CreateCollection.Collection(collectionId).Equals("OK"))
             {
-                collectionCreated = true;
+                AddFaces.FaceAddition(collectionId, bucket, photoToBeAdded);
             }
-
-            if(collectionCreated)
+            else
             {
-                return AddFaces.FaceAddition(collectionId);
+                return "Error occurred";
             }
-            return SearchFacesMatchingImage.RecogniseFaceMatch(collectionId);
+            return SearchFacesMatchingImage.RecogniseFaceMatchFromS3(collectionId, bucket, photo);
 
         }
 

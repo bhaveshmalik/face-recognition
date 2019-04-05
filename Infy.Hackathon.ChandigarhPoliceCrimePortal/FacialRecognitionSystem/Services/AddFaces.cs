@@ -8,11 +8,9 @@ namespace FacialRecognitionSystem.Services
 {
     public class AddFaces
     {
-        public static string FaceAddition(string collectionId)
+        public static void FaceAddition(string collectionId,string bucket, string faceToBeAdded)
         {
 
-            var bucket = "bhavesh-aws-bucket";
-            var photo = "download (1).jpg";
 
             AmazonRekognitionClient rekognitionClient = new AmazonRekognitionClient(RegionEndpoint.APSouth1);
 
@@ -21,7 +19,7 @@ namespace FacialRecognitionSystem.Services
                 S3Object = new S3Object()
                 {
                     Bucket = bucket,
-                    Name = photo
+                    Name = faceToBeAdded
                 }
             };
 
@@ -29,20 +27,19 @@ namespace FacialRecognitionSystem.Services
             {
                 Image = image,
                 CollectionId = collectionId,
-                ExternalImageId = photo,
+                ExternalImageId = faceToBeAdded,
                 DetectionAttributes = new List<String>() {"ALL"}
             };
 
             var indexFacesResponse = rekognitionClient.IndexFacesAsync(indexFacesRequest);
 
-            Console.WriteLine(photo + " added");
+            Console.WriteLine(faceToBeAdded + " added");
             foreach (FaceRecord faceRecord in indexFacesResponse.Result.FaceRecords)
             {
                 Console.WriteLine("Face detected: Faceid is " +
                                   faceRecord.Face.FaceId);
-                return faceRecord.Face.FaceId;
+               
             }
-            return null;
         }
     }
 

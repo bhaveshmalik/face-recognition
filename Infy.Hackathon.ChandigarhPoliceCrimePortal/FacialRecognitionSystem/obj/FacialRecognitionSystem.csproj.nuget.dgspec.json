@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Bhavesh\\source\\repos\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj": {}
+    "C:\\Users\\Bhavesh\\source\\repos\\face-recognition\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Bhavesh\\source\\repos\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj": {
+    "C:\\Users\\Bhavesh\\source\\repos\\face-recognition\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Bhavesh\\source\\repos\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj",
+        "projectUniqueName": "C:\\Users\\Bhavesh\\source\\repos\\face-recognition\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj",
         "projectName": "FacialRecognitionSystem",
-        "projectPath": "C:\\Users\\Bhavesh\\source\\repos\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj",
+        "projectPath": "C:\\Users\\Bhavesh\\source\\repos\\face-recognition\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\FacialRecognitionSystem.csproj",
         "packagesPath": "C:\\Users\\Bhavesh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Bhavesh\\source\\repos\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\obj\\",
+        "outputPath": "C:\\Users\\Bhavesh\\source\\repos\\face-recognition\\Infy.Hackathon.ChandigarhPoliceCrimePortal\\FacialRecognitionSystem\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
