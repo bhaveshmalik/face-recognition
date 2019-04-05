@@ -43,7 +43,7 @@ PDX-License-Identifier: MIT-0 (For details, see https://github.com/awsdocs/amazo
  });
  Webcam.attach( '#my_camera' );
 
-< !--Code to handle taking the snapshot and displaying it locally-- >
+
 
 function take_snapshot_search() {
 	AnonLog();
@@ -84,7 +84,8 @@ function take_snapshot_search() {
  },
  MaxFaces:1
  };
-
+     AWS.region = "us-east-1";
+     var rekognition = new AWS.Rekognition();
  rekognition.searchFacesByImage(params, function (err, data) {
  if (err) console.log(err, err.stack);// an error occurred
 else
