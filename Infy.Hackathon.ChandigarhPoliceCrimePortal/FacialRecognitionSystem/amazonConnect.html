@@ -1,0 +1,291 @@
+﻿<!--
+Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+PDX-License-Identifier: MIT-0 (For details, see https://github.com/awsdocs/amazon-rekognition-developer-guide/blob/master/LICENSE-SAMPLECODE.)
+-->
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="aws-cognito-sdk.min.js"></script>
+    <script src="amazon-cognito-identity.min.js"></script>
+    <script src="https://sdk.amazonaws.com/js/aws-sdk-2.16.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.js"></script>
+    <script src="./app.js"></script>
+    <meta charset="UTF-8">
+    <title>Rekognition</title>
+</head>
+
+<body>
+    <H1>Age Estimator</H1>
+    <input type="file" name="fileToUpload" id="fileToUpload" accept="image/*">
+    <p id="opResult"></p>
+
+    <div id="my_camera"></div>
+
+
+    <input type=button value="Take Snapshot and Add to collection" onClick="take_snapshot_save()">
+
+    <input type=button value="Take Snapshot and check if user exists" onClick="take_snapshot_search()">
+
+    <div id="results"></div>
+
+    </div>
+</body>
+
+<!-- Configure a few settings and attach camera -->
+<script language="JavaScript">
+
+    //Initialize webcam
+ Webcam.set({
+  width: 320,
+  height: 240,
+  image_format: 'jpeg',
+  jpeg_quality: 90
+ });
+ Webcam.attach( '#my_camera' );
+
+< !--Code to handle taking the snapshot and displaying it locally-- >
+
+function take_snapshot_search() {
+	AnonLog();
+ // take snapshot and get image data
+ Webcam.snap( function(data_uri) {
+ //data_uri = data_uri.split(',')[1];
+ //data_uri = base64toBytes(data_uri);
+ var image = null;
+  var img = document.createElement('img');
+ img.src = data_uri;
+  var jpg = true;
+        try {
+          image = atob(data_uri.split("data:image/jpeg;base64,")[1]);
+
+        } catch (e) {
+          jpg = false;
+        }
+        if (jpg == false) {
+          try {
+            image = atob(data_uri.split("data:image/png;base64,")[1]);
+          } catch (e) {
+            alert("Not an image file Rekognition can process");
+            return;
+          }
+        }
+  var length = data_uri.length;
+        imageBytes = new ArrayBuffer(length);
+        var ua = new Uint8Array(imageBytes);
+        for (var i = 0; i < length; i++) {
+          ua[i] = image.charCodeAt(i);
+        }
+
+ var params= {
+ CollectionId: "test_recognition",
+ FaceMatchThreshold:95,
+ Image:{
+	Bytes: imageBytes,
+ },
+ MaxFaces:1
+ };
+
+ rekognition.searchFacesByImage(params, function (err, data) {
+ if (err) console.log(err, err.stack);// an error occurred
+else
+{
+	if(data.FaceMatches[0] == undefined){
+	alert("not found");
+	}
+	else{
+		alert(data.FaceMatches[0].Face.ExternalImageId);
+	}
+}
+ })
+  // display results in page
+ // document.getElementById('results').innerHTML =
+ // '<img src="'+data_uri+'"/>';
+  } );
+}
+
+function take_snapshot_save() {
+
+ AnonLog();
+ // take snapshot and get image data
+ Webcam.snap( function(data_uri) {
+ //data_uri = data_uri.split(',')[1];
+ //data_uri = base64toBytes(data_uri);
+ var image = null;
+  var img = document.createElement('img');
+ img.src = data_uri;
+  var jpg = true;
+        try {
+          image = atob(data_uri.split("data:image/jpeg;base64,")[1]);
+
+        } catch (e) {
+          jpg = false;
+        }
+        if (jpg == false) {
+          try {
+            image = atob(data_uri.split("data:image/png;base64,")[1]);
+          } catch (e) {
+            alert("Not an image file Rekognition can process");
+            return;
+          }
+        }
+ var length = data_uri.length;
+        imageBytes = new ArrayBuffer(length);
+        var ua = new Uint8Array(imageBytes);
+        for (var i = 0; i < length; i++) {
+          ua[i] = image.charCodeAt(i);
+        }
+
+ var params= {
+ CollectionId: "test_recognition",
+ DetectionAttributes:[],
+ ExternalImageId: "1",
+ Image:{
+	Bytes: imageBytes,
+ }};
+
+  AWS.region = "us-east-1";
+ var rekognition = new AWS.Rekognition();
+ rekognition.indexFaces(params, function (err, data) {
+ if (err) console.log(err, err.stack);// an error occurred
+else
+	{
+		console.log(data);
+		alert("user added successfully to collection");
+	}
+ })
+
+  // display results in page
+  document.getElementById('results').innerHTML =
+  '<img src="'+data_uri+'"/>';
+  } );
+}
+
+</script>
+
+<script>
+
+function CreateCollection(){
+	AnonLog();
+   AWS.region = "us-east-1";
+   var rekognition = new AWS.Rekognition();
+  var params = {
+  CollectionId: "test_recognition"
+ };
+ rekognition.createCollection(params, function(err, data) {
+   if (err) console.log(err, err.stack); // an error occurred
+   else     console.log(data);           // successful response
+   /*
+   data = {
+    CollectionArn: "aws:rekognition:us-west-2:123456789012:collection/myphotos",
+    StatusCode: 200
+   }
+   */
+ });
+}
+
+CreateCollection();
+
+  document.getElementById("fileToUpload").addEventListener("change", function (event) {
+    ProcessImage();
+  }, false);
+
+  //Calls DetectFaces API and shows estimated ages of detected faces
+  function DetectFaces(imageData) {
+    AWS.region = "us-east-1";
+    var rekognition = new AWS.Rekognition();
+    var params = {
+      Image: {
+        Bytes: imageData
+      },
+      Attributes: [
+        'ALL',
+      ]
+    };
+
+	rekognition.detectFaces(params, function (err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else {
+       var table = "<table><tr><th>Low</th><th>High</th></tr>";
+        // show each face and build out estimated age table
+        for (var i = 0; i < data.FaceDetails.length; i++) {
+          table += '<tr><td>' + data.FaceDetails[i].AgeRange.Low +
+            '</td><td>' + data.FaceDetails[i].AgeRange.High + '</td></tr>';
+        }
+        table += "</table>";
+        document.getElementById("opResult").innerHTML = table;
+      }
+    });
+
+	 rekognition.searchFaces(params, function (err, data) {
+      if (err) console.log(err, err.stack); // an error occurred
+      else {
+       var table = "<table><tr><th>Low</th><th>High</th></tr>";
+        // show each face and build out estimated age table
+        for (var i = 0; i < data.FaceDetails.length; i++) {
+          table += '<tr><td>' + data.FaceDetails[i].AgeRange.Low +
+            '</td><td>' + data.FaceDetails[i].AgeRange.High + '</td></tr>';
+        }
+        table += "</table>";
+        document.getElementById("opResult").innerHTML = table;
+      }
+    });
+  }
+  //Loads selected image and unencodes image bytes for Rekognition DetectFaces API
+  function ProcessImage() {
+    AnonLog();
+    var control = document.getElementById("fileToUpload");
+    var file = control.files[0];
+
+    // Load base64 encoded image
+    var reader = new FileReader();
+    reader.onload = (function (theFile) {
+      return function (e) {
+        var img = document.createElement('img');
+        var image = null;
+        img.src = e.target.result;
+        var jpg = true;
+        try {
+          image = atob(e.target.result.split("data:image/jpeg;base64,")[1]);
+
+        } catch (e) {
+          jpg = false;
+        }
+        if (jpg == false) {
+          try {
+            image = atob(e.target.result.split("data:image/png;base64,")[1]);
+          } catch (e) {
+            alert("Not an image file Rekognition can process");
+            return;
+          }
+        }
+        //unencode image bytes for Rekognition DetectFaces API
+        var length = image.length;
+        imageBytes = new ArrayBuffer(length);
+        var ua = new Uint8Array(imageBytes);
+        for (var i = 0; i < length; i++) {
+          ua[i] = image.charCodeAt(i);
+        }
+        //Call Rekognition
+        DetectFaces(imageBytes);
+      };
+    })(file);
+    reader.readAsDataURL(file);
+  }
+  //Provides anonymous log on to AWS services
+  function AnonLog() {
+
+    // Configure the credentials provider to use your identity pool
+    AWS.config.region = 'us-east-1'; // Region
+    AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'us-east-1:4d4397ce-dddc-48d3-962e-4bc72ea56d7f',
+    });
+    // Make the call to obtain credentials
+    AWS.config.credentials.get(function () {
+      // Credentials will be available when this function is called.
+      var accessKeyId = AWS.config.credentials.accessKeyId;
+      var secretAccessKey = AWS.config.credentials.secretAccessKey;
+      var sessionToken = AWS.config.credentials.sessionToken;
+    });
+  }
+</script>
+</html>
